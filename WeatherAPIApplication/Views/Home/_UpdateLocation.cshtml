@@ -1,0 +1,51 @@
+﻿@model WeatherAPIApplication.Models.ViewModels.LocationViewModel
+
+<div data-role="page">
+    <script src="~/Scripts/jquery-3.6.3.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+</div>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "formChoice" }))
+{
+    @Html.AntiForgeryToken();
+    @Html.HiddenFor(model => model.ID);
+    <div class="modal-header">
+        <h6 class="modal-title">Update Location</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body px-4">
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="row">
+                @Html.LabelFor(model => model.CityName, htmlAttributes: new { @class = "control-label" })
+                @Html.TextBoxFor(model => model.CityName, "", htmlAttributes: new { @class = "form-control", @id = "inserted-city" })
+                @Html.ValidationMessageFor(model => model.CityName, "", new { @class = "text-danger" })
+            </div>
+            <div class="row">
+                @Html.LabelFor(model => model.CountryCodeID, htmlAttributes: new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.CountryCodeID, ViewBag.CountryCodes as IEnumerable<SelectListItem>, "", htmlAttributes: new { @class = "form-control", @id = "chosen-country-code" })
+                @Html.ValidationMessageFor(model => model.CountryCodeID, "", new { @class = "text-danger" })
+            </div>
+            <div class="row">
+                @Html.LabelFor(model => model.UnitID, htmlAttributes: new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.UnitID, ViewBag.Units as IEnumerable<SelectListItem>, "", htmlAttributes: new { @class = "form-control", @id = "chosen-unit" })
+                @Html.ValidationMessageFor(model => model.UnitID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer justify-content-start">
+        <div class="form-group">
+            <span id="MessageToClient" class="text-danger"></span><br />
+            <button type="submit" class="btn btn-success" name="submit" value="save">
+                <i class="fas fa-check-circle"></i>
+                Update
+            </button>
+            <button type="button" class="btn btn-danger ml-2" data-dismiss="modal" aria-label="Close">
+                <i class="fas fa-times-circle"></i>
+                Cancel
+            </button>
+        </div>
+    </div>
+}

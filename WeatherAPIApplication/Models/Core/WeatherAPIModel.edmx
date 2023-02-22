@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="WeatherAPIModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_unit" Type="int" Nullable="false" />
+          <Property Name="id_country_code" Type="int" Nullable="false" />
+          <Property Name="name_city" Type="varchar" MaxLength="56" Nullable="false" />
+          <Property Name="latitude" Type="decimal" Precision="8" Scale="6" Nullable="false" />
+          <Property Name="longitude" Type="decimal" Precision="9" Scale="6" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Lookup">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="order" Type="tinyint" Nullable="false" />
+          <Property Name="type" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="value" Type="varchar(max)" Nullable="false" />
+          <Property Name="is_active" Type="bit" />
+        </EntityType>
+        <Association Name="FK_Location_id_country_code_Lookup_id">
+          <End Role="Lookup" Type="Self.Lookup" Multiplicity="1" />
+          <End Role="Location" Type="Self.Location" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lookup">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Location">
+              <PropertyRef Name="id_country_code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Location_id_unit_Lookup_id">
+          <End Role="Lookup" Type="Self.Lookup" Multiplicity="1" />
+          <End Role="Location" Type="Self.Location" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lookup">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Location">
+              <PropertyRef Name="id_unit" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="WeatherAPIModelStoreContainer">
+          <EntitySet Name="Location" EntityType="Self.Location" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Lookup" EntityType="Self.Lookup" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Location_id_country_code_Lookup_id" Association="Self.FK_Location_id_country_code_Lookup_id">
+            <End Role="Lookup" EntitySet="Lookup" />
+            <End Role="Location" EntitySet="Location" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Location_id_unit_Lookup_id" Association="Self.FK_Location_id_unit_Lookup_id">
+            <End Role="Lookup" EntitySet="Lookup" />
+            <End Role="Location" EntitySet="Location" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="WeatherAPIModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="WeatherAPIEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Locations" EntityType="WeatherAPIModel.Location" />
+          <EntitySet Name="Lookups" EntityType="WeatherAPIModel.Lookup" />
+          <AssociationSet Name="FK_Location_id_country_code_Lookup_id" Association="WeatherAPIModel.FK_Location_id_country_code_Lookup_id">
+            <End Role="Lookup" EntitySet="Lookups" />
+            <End Role="Location" EntitySet="Locations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Location_id_unit_Lookup_id" Association="WeatherAPIModel.FK_Location_id_unit_Lookup_id">
+            <End Role="Lookup" EntitySet="Lookups" />
+            <End Role="Location" EntitySet="Locations" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_unit" Type="Int32" Nullable="false" />
+          <Property Name="id_country_code" Type="Int32" Nullable="false" />
+          <Property Name="name_city" Type="String" Nullable="false" MaxLength="56" FixedLength="false" Unicode="false" />
+          <Property Name="latitude" Type="Decimal" Nullable="false" Precision="8" Scale="6" />
+          <Property Name="longitude" Type="Decimal" Nullable="false" Precision="9" Scale="6" />
+          <NavigationProperty Name="Lookup" Relationship="WeatherAPIModel.FK_Location_id_country_code_Lookup_id" FromRole="Location" ToRole="Lookup" />
+          <NavigationProperty Name="Lookup1" Relationship="WeatherAPIModel.FK_Location_id_unit_Lookup_id" FromRole="Location" ToRole="Lookup" />
+        </EntityType>
+        <EntityType Name="Lookup">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="order" Type="Byte" Nullable="false" />
+          <Property Name="type" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="is_active" Type="Boolean" />
+          <NavigationProperty Name="Locations" Relationship="WeatherAPIModel.FK_Location_id_country_code_Lookup_id" FromRole="Lookup" ToRole="Location" />
+          <NavigationProperty Name="Locations1" Relationship="WeatherAPIModel.FK_Location_id_unit_Lookup_id" FromRole="Lookup" ToRole="Location" />
+        </EntityType>
+        <Association Name="FK_Location_id_country_code_Lookup_id">
+          <End Type="WeatherAPIModel.Lookup" Role="Lookup" Multiplicity="1" />
+          <End Type="WeatherAPIModel.Location" Role="Location" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lookup">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Location">
+              <PropertyRef Name="id_country_code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Location_id_unit_Lookup_id">
+          <End Type="WeatherAPIModel.Lookup" Role="Lookup" Multiplicity="1" />
+          <End Type="WeatherAPIModel.Location" Role="Location" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lookup">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Location">
+              <PropertyRef Name="id_unit" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="WeatherAPIModelStoreContainer" CdmEntityContainer="WeatherAPIEntities">
+          <EntitySetMapping Name="Locations">
+            <EntityTypeMapping TypeName="WeatherAPIModel.Location">
+              <MappingFragment StoreEntitySet="Location">
+                <ScalarProperty Name="longitude" ColumnName="longitude" />
+                <ScalarProperty Name="latitude" ColumnName="latitude" />
+                <ScalarProperty Name="name_city" ColumnName="name_city" />
+                <ScalarProperty Name="id_country_code" ColumnName="id_country_code" />
+                <ScalarProperty Name="id_unit" ColumnName="id_unit" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Lookups">
+            <EntityTypeMapping TypeName="WeatherAPIModel.Lookup">
+              <MappingFragment StoreEntitySet="Lookup">
+                <ScalarProperty Name="is_active" ColumnName="is_active" />
+                <ScalarProperty Name="value" ColumnName="value" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="order" ColumnName="order" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

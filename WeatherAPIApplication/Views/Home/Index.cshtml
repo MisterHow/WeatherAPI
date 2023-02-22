@@ -1,0 +1,159 @@
+﻿@model IEnumerable<WeatherAPIApplication.Models.ViewModels.LocationViewModel>
+@{
+    <div id="modalBody" class="modal" tabindex="-1" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div id="modalContent">
+                </div>
+            </div>
+        </div>
+    </div>
+    var APIKey = System.Web.Configuration.WebConfigurationManager.AppSettings["APIKey"];
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Weather</h1>
+    <h2 class="lead">ASP.NET Web application to allow the user to get weather information on the specified location.</h2>
+    <h4>Temperature; Minimum and Maximum, Humidity, Pressure, Sunrise and Sunset.</h4>
+</div>
+
+<div class="row my-3">
+    <div class="col-md-4">
+        <!--°C-->
+        <div>
+            <a id="AddLocation" type="button" class="btn btn-primary" href="@Url.Action("AddLocation", "Home")" data-modal>Add your Location!</a>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <table class="table table-striped table-bordered text-center">
+        <thead class="table-info">
+            <tr>
+                <th scope="col">@Html.DisplayNameFor(model => model.CityName)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.CountryCode)</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var location in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(locationModel => location.CityName)</td>
+                    <td>@Html.DisplayFor(locationModel => location.CountryCode)</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Actions Button Group">
+                            <button type="button" class="btn btn-success" onclick="CheckCache('@location.CityName', '@location.Unit', @location.Latitude, @location.Longitude)">Load</button>
+                            <a type="button" class="btn btn-warning" href='@Url.Action("UpdateLocation", "Home")?locationID=@location.ID' data-modal>Update</a>
+                            <button type="button" class="btn btn-danger" onclick="RemoveLocation(@location.ID)">Remove</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <table class="table table-bordered text-center">
+        <thead class="table-info">
+            <tr>
+                <th scope="col">Temperature</th>
+                <th scope="col">Temperature Max</th>
+                <th scope="col">Temperature Min</th>
+                <th scope="col">Humidity</th>
+                <th scope="col">Pressure</th>
+                <th scope="col">Sunrise</th>
+                <th scope="col">Sunset</th>
+            </tr>
+        </thead>
+        <tbody class="table-light">
+            <tr>
+                <td id="temp"></td>
+                <td id="tempMax"></td>
+                <td id="tempMin"></td>
+                <td id="humidity"></td>
+                <td id="pressure"></td>
+                <td id="sunrise"></td>
+                <td id="sunset"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+@section scripts  {
+    <script src="~/Scripts/ModalSetup.js"></script>
+    <script type="text/javascript">
+        const cacheTime = 1800;
+        const cache = {};
+        let cacheTimer = 0;
+
+        async function getCacheTimer(time) {
+            const now = new Date().getTime();
+            if (cacheTimer < now + time) {
+                cacheTimer = now + time;
+            }
+            return cacheTimer;
+        }
+
+        async function CheckCache(cityName, unit, lat, lon) {
+            const now = new Date().getTime();
+            if (!cache[cityName] || cache[cityName].cacheTimer < now) {
+                cache[cityName] = await GetWeatherInfo(lat, lon, unit);
+                cache[cityName].cacheTimer = getCacheTimer(cacheTime);
+                DisplayWeatherInfo(cache[cityName]);
+            }
+            else {
+                console.log("cache");
+                DisplayWeatherInfo(cache[cityName]);
+            }
+        }
+
+        async function GetWeatherInfo(lat, lon, unit) {
+            return $.ajax({
+                url: "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&units=" + unit + "&appid=" + '@APIKey',
+                type: 'get',
+                cache: true,
+                dataType: 'json',
+                success: function (response) {
+                    console.log("not cache");
+                    console.log(response);
+                    DisplayWeatherInfo(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        };
+
+        async function DisplayWeatherInfo(response) {
+            var temp, tempMin, tempMax, pressure, humidity, sunrise, sunset;
+            var responseMain = response.main;
+            var responseSys = response.sys;
+            temp = responseMain.temp;
+            tempMin = responseMain.temp_min;
+            tempMax = responseMain.temp_max;
+            humidity = responseMain.humidity;
+            pressure = responseMain.pressure;
+            sunrise = responseSys.sunrise * 1000;
+            sunset = responseSys.sunset * 1000;
+            document.getElementById('temp').innerText = temp;
+            document.getElementById('tempMax').innerText = tempMax;
+            document.getElementById('tempMin').innerText = tempMin;
+            document.getElementById('humidity').innerText = humidity;
+            document.getElementById('pressure').innerText = pressure;
+            document.getElementById('sunrise').innerText = new Date(sunrise).toLocaleString();
+            document.getElementById('sunset').innerText = new Date(sunset).toLocaleString();
+        }
+
+        async function RemoveLocation(locationID) {
+            $.ajax({
+                url: "@Url.Action("RemoveLocation", "Home")",
+                type: 'post',
+                data: { locationID },
+                success: function (result) {
+                    location.reload();
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            })
+        }
+    </script>
+}
