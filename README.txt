@@ -1,3 +1,11 @@
+
+////////////////////
+----REQUIREMENTS----
+////////////////////
+-Visual Studio
+-SQL Server Management Studio
+-.NET 4.5 (or above)
+
 //////////////
 ----SET-UP----
 //////////////
@@ -9,6 +17,7 @@
 3. Add a Login to LocalDB 'WeatherAdmin' with password 'Let1Me2In3'.
 4. Grant the 'WeatherAdmin' login 'db_datareader' and 'db_datawriter' access to 'WeatherAPI' database.
 	a. If the database is dropped, this will need to be applied again.
+
 //////////////
 ----HOW-TO----
 //////////////
@@ -16,37 +25,10 @@ The application works by holding the chosen locations in a local database table.
 The CountryCode, CityName, Latitude and Longitude are all saved to the database.
 These locations are then displayed in a table on the Home page.
 There is not limit to the amount of locations you can add, although this could be implemented.
-Clicking 'Load' in the Actions column of the relevant row will perform an ajax api call, using the latitude and longitude as parameters.
-//////////////////////////
------PROCESS-AND-TIME-----
-//////////////////////////
-Analysing, planning and testing: 2 hours (1 hour was spent attempting to use the metoffice API)
-Development: 10 hours. (1-2 hours spent on functionality that I have since removed && <= 1 hour was spent updating syntax for the modal (I'm used to an older Bootstrap syntax))
-Clear-up, documentation, commenting and uploading: 1-2 hours
+Clicking 'Load' in the Actions column will perform an ajax api call, using the latitude and longitude as parameters.
+Clicking 'Update' in the Actions column will open a bootstrap modal allowing the user to update the location details.
+Clicking 'Remove' in the Actions column will permanently remove the relevant row of data from the database.
 
-I wanted to feel confident, so I used what I am familiar with; MVC, SQL and Bootstrap. The latest versions (that still have LTS) were used.
-
-MVC is an appropriate design pattern which helps achieve a clean separation of concerns. 
-Separating the user interface, data and application logic.
-The use of MVC makes implementing the SOLID principles affective and grants ease of management; 
-
-EntityFramework (EF) is the method for database communication, I'm familiar with usin LINQ queries and haven't explored Dapper yet. So I was confident with this choice.
-EF accommodates for SQL injection, as well as generation of entities, which helps to speed the process along. 
-Also, the provision of a relationship diagram allows me to know if the relationship is set-up as expected.
-
-Originally there was a 'Weather' table, which I felt would be used for storing and accessing the weather details.
-In hindsight this would be a slow process, provide useless static data and not provide the required functionality.
-The viewmodel for this was used for the headers of the Weather table, but it has now been left as hardcoded values.
-Given more time I would probably reintroduce a viewmodel and/or a struct, so that the display values can be displayed. (With MetaData/Partial Classes)
-Each LocationViewModel would have an instance of 'Weather'. This could extract the logic of converting timestamp to datetime to belong to Weather only.
-
-The Bootstrap modal used for adding a location allows the user to select from the dropdowns provided, allowing these methods to only have a single responsibility.
-The syntax for this was slightly different and this stumped me for a few minutes.
-
-Caching was new to me, but when taking a step-back look at it, it's very clear that the object being returned can just be stored and accessed.
-The caching time is set when it is accessed, allowing the lifespan to be adapted or grow depending on it's use.
-This took me a couple of hours to get right, I managed to implement it into the existing functionality and this further allowed for a level of abstraction.
-The api call requires an object to be passed to it, this can be either the cached response or not.
 ///////////////
 -----TO-DO-----
 ///////////////
